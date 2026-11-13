@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Регистрация')}"></head>
+<body class="min-h-screen bg-gradient-to-b from-[#fff8ea] to-[#ffe8c2] text-[#2d2a26] flex flex-col font-sans">
+<header th:replace="~{layout :: top(true)}"></header>
+<main class="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-8 space-y-6">
+  <div class="text-center bg-gradient-to-r from-[#072d37] to-[#0e4b5a] text-[#fff8e7] rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-[#ffb300]/60">
+    <span class="inline-block bg-[#ffd84d]/20 text-[#ffe28a] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+      Учебная практика · Чат Хорошее Настроение
+    </span>
+    <h1 class="text-2xl sm:text-3xl font-black text-[#ffd84d] tracking-tight">Регистрация нового участника</h1>
+    <p class="text-xs sm:text-sm text-[#c4f0e9] mt-2 max-w-xl mx-auto">
+      Заполните анкету участника (35+ вопросов) для входа в чат. Персональные данные шифруются по стандарту AES-256-GCM, а пароль защищён BCrypt.
+    </p>
+    <div class="mt-5 inline-flex bg-[#052028] p-1 rounded-xl border border-[#1f5d6b]">
+      <a th:href="@{/register}" class="px-4 py-2 rounded-lg text-xs font-bold bg-[#ff9800] text-white shadow">Регистрация</a>
+      <a th:href="@{/login}" class="px-4 py-2 rounded-lg text-xs font-bold text-[#a8ded6] hover:text-white transition-all">Вход</a>
+    </div>
+  </div>
+
+  <form th:action="@{/register}" th:object="${form}" method="post" class="space-y-6">
+    <div class="bg-white rounded-2xl p-5 border border-[#ffe0b2] shadow-xs space-y-4">
+      <h3 class="text-base font-bold text-[#3e2723] pb-2 border-b border-[#ffe8b8]">🔒 1. Учётные данные доступа</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+        <div th:replace="~{layout :: field('login','Логин (латиница, цифры, _) *','text')}"></div>
+        <div th:replace="~{layout :: field('password','Пароль (от 6 символов) *','password')}"></div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-5 border border-[#ffe0b2] shadow-xs space-y-4">
+      <div class="profile-form-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 text-xs">
+        <th:block th:replace="~{layout :: profileFields}"></th:block>
+      </div>
+      <div class="pt-4 border-t border-[#ffe8b8] flex flex-wrap items-center justify-between gap-3">
+        <p class="text-xs text-[#6d4c41]">
+          Уже есть аккаунт? <a th:href="@{/login}" class="text-[#e65100] font-bold underline">Войти</a>
+        </p>
+        <button type="submit" class="px-8 py-3 bg-gradient-to-r from-[#ff9800] via-[#f57c00] to-[#e65100] hover:brightness-110 text-white font-black text-sm rounded-xl shadow-md transition-all cursor-pointer">
+          Зарегистрироваться и войти в чат
+        </button>
+      </div>
+    </div>
+  </form>
+</main>
+</body>
+</html>

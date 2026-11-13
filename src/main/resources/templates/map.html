@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Карта')}"></head>
+<body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
+<header th:replace="~{layout :: top(true)}"></header>
+<div th:replace="~{layout :: topnav('map')}"></div>
+<main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-6 pb-20 md:pb-8 space-y-6">
+  <div class="bg-white rounded-2xl p-5 border border-[#ffe0b2] shadow-xs space-y-4">
+    <div>
+      <h3 class="font-bold text-lg text-[#3e2723] flex items-center gap-2">
+        <svg class="w-5 h-5 text-[#e65100]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Участники на карте</span>
+      </h3>
+      <p class="text-xs text-[#795548]">Здесь видны все участники чата хорошего настроения и их города с геолокацией.</p>
+    </div>
+
+    <div th:if="${#strings.isEmpty(yandexKey)}" class="bg-[#e0f2f1]/60 border border-[#80cbc4] rounded-2xl p-4 text-xs text-[#004d40] space-y-1.5">
+      <div class="font-bold text-sm text-[#00695c]">🔑 Куда вставлять ключ Яндекс.Карт (API)</div>
+      <p>Вставьте ключ в файл <code class="bg-white px-1.5 py-0.5 rounded font-mono border border-[#b2dfdb]">src/main/resources/application.properties</code>:</p>
+      <pre class="bg-[#0f172a] text-[#38bdf8] p-2.5 rounded-xl font-mono text-[11px] overflow-x-auto">app.yandex.key=ВАШ_КЛЮЧ_ИЗ_DEVELOPER.TECH.YANDEX.RU</pre>
+      <p>Или передайте через переменную окружения: <code class="font-mono font-bold">YANDEX_MAPS_KEY</code>.</p>
+    </div>
+
+    <div id="map"></div>
+    <p id="status" class="text-xs font-medium text-[#e65100] bg-[#fff8ea] px-3 py-1.5 rounded-lg border border-[#ffe2a8]">Определяю твоё местоположение…</p>
+  </div>
+</main>
+<nav th:replace="~{layout :: tabs('map')}"></nav>
+<script th:if="${!#strings.isEmpty(yandexKey)}" th:src="'https://api-maps.yandex.ru/2.1/?apikey=' + ${yandexKey} + '&lang=ru_RU'"></script>
+<script th:src="@{/js/geo.js}"></script>
+<script th:src="@{/js/map.js}"></script>
+</body>
+</html>

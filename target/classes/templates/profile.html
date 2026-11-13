@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Профиль')}"></head>
+<body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
+<header th:replace="~{layout :: top(true)}"></header>
+<div th:replace="~{layout :: topnav('profile')}"></div>
+<main class="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-6 pb-24 md:pb-12 space-y-6">
+  <!-- Profile Hero Banner -->
+  <div class="bg-gradient-to-r from-[#072d37] to-[#0e4b5a] text-[#fff8e7] rounded-2xl p-6 shadow-md border-2 border-[#ffb300]/50">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-[#ffd84d] text-black flex items-center justify-center font-bold flex-shrink-0 shadow">
+          <svg width="34" height="34" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffd84d" stroke="#e0a100"/><rect x="4.5" y="8" width="6.5" height="4.2" rx="1.6" fill="#111"/><rect x="13" y="8" width="6.5" height="4.2" rx="1.6" fill="#111"/><path d="M11 9.3h2" stroke="#111" stroke-width="1.4"/><path d="M7 14q5 5 10 0" fill="none" stroke="#5a3a00" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 class="text-xl md:text-2xl font-black text-[#ffd84d]" th:text="${me.displayName}">Профиль</h2>
+            <span th:if="${me.role == 'ADMIN'}" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-600 text-white">👑 Администратор</span>
+            <span th:if="${me.role == 'MODERATOR'}" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-600 text-white">🛡️ Модератор</span>
+            <span th:if="${me.role != 'ADMIN' and me.role != 'MODERATOR'}" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-700 text-gray-200">👤 Участник</span>
+          </div>
+          <p class="text-xs text-[#b2ebf2] mt-0.5">
+            Логин: <code class="font-mono text-white" th:text="'@' + ${me.login}">@user</code> · Баланс: <strong class="text-[#ffd84d]" th:text="${me.sparks} + ' ✨'">1000 ✨</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 pt-3 border-t border-[#235866] flex items-center gap-2 text-xs text-[#80cbc4]">
+      <svg class="w-4 h-4 text-[#ffd84d] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+      <span><strong>Защита данных в H2</strong>: Пароль защищён хэшем <strong>BCrypt</strong>, персональные поля анкеты шифруются <strong>AES-256-GCM</strong> через <code>CryptoConverter</code>.</span>
+    </div>
+  </div>
+
+  <div th:if="${saved}" class="bg-[#e8f5e9] border border-[#81c784] text-[#1b5e20] px-4 py-3 rounded-xl text-xs font-bold shadow-xs">
+    Профиль успешно сохранён в базе данных H2 (зашифровано AES-256-GCM)! ✓
+  </div>
+
+  <form th:action="@{/profile}" th:object="${form}" method="post" class="bg-white rounded-2xl p-5 sm:p-6 border border-[#ffe0b2] shadow-xs space-y-5">
+    <div class="profile-form-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 text-xs">
+      <th:block th:replace="~{layout :: profileFields}"></th:block>
+    </div>
+    <div class="pt-3 border-t border-[#ffe8b8] flex justify-end">
+      <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#ff9800] to-[#f57c00] hover:from-[#f57c00] hover:to-[#e65100] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer">
+        Сохранить изменения в H2
+      </button>
+    </div>
+  </form>
+</main>
+<nav th:replace="~{layout :: tabs('profile')}"></nav>
+</body>
+</html>

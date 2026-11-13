@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Главная')}"></head>
+<body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
+<header th:replace="~{layout :: top(true)}"></header>
+<div th:replace="~{layout :: topnav('home')}"></div>
+<main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-6 pb-20 md:pb-8 space-y-6">
+
+  <!-- Hero Welcome Card -->
+  <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#ffd54f] via-[#ff9800] to-[#f4511e] p-6 md:p-8 text-[#301600] shadow-md">
+    <div class="relative z-10 max-w-2xl">
+      <div class="inline-flex items-center gap-1.5 bg-white/30 backdrop-blur-xs px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase mb-3">
+        <svg class="w-3.5 h-3.5 text-[#ffeb3b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+        <span>Учебная практика · Веб-чат с позитивом</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black tracking-tight mb-2 text-[#2a0e00]">
+        Чат хорошего настроения
+      </h1>
+      <p class="text-sm md:text-base font-medium leading-relaxed opacity-95 mb-5 text-[#3b1c03]">
+        Общайся, делись тёплыми улыбками, находи интересных людей рядом с помощью компаса и счётчика Гейгера, слушай ретро-радио и пользуйся калькулятором!
+      </p>
+
+      <div class="flex flex-wrap items-center gap-3" th:if="${me == null}">
+        <a th:href="@{/register}" class="px-5 py-2.5 bg-[#0e4b5a] hover:bg-[#07323c] text-[#fff6d6] font-bold rounded-xl shadow-md transition-all flex items-center gap-2">
+          Присоединиться
+        </a>
+        <a th:href="@{/login}" class="px-4 py-2.5 bg-white/85 hover:bg-white text-[#e65100] font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5">
+          Войти в аккаунт
+        </a>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3" th:if="${me != null}">
+        <a th:href="@{/chat}" class="px-5 py-2.5 bg-[#0e4b5a] hover:bg-[#07323c] text-[#fff6d6] font-bold rounded-xl shadow-md transition-all flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#ffd84d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+          <span>Открыть чат</span>
+        </a>
+        <a th:href="@{/upgrader}" class="px-4 py-2.5 bg-white/85 hover:bg-white text-[#e65100] font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+          <span>Upgrader</span>
+        </a>
+        <a th:href="@{/shop}" class="px-4 py-2.5 bg-white/85 hover:bg-white text-[#0e4b5a] font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Магазин</span>
+        </a>
+        <a th:href="@{/compass}" class="px-4 py-2.5 bg-white/80 hover:bg-white text-[#d84315] font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span>Компас и Гейгер</span>
+        </a>
+        <a th:if="${me.role == 'ADMIN'}" th:href="@{/h2-console}" target="_blank" class="px-4 py-2.5 bg-[#ffecb3] hover:bg-[#ffe082] text-[#5d4037] font-semibold rounded-xl transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-[#e65100]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+          <span>База H2 (Админ)</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="absolute -bottom-8 -right-8 opacity-25 md:opacity-40 pointer-events-none">
+      <svg width="190" height="190" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="11" fill="#ffd84d" stroke="#e0a100"/>
+        <rect x="4.5" y="8" width="6.5" height="4.2" rx="1.6" fill="#111"/>
+        <rect x="13" y="8" width="6.5" height="4.2" rx="1.6" fill="#111"/>
+        <path d="M11 9.3h2" stroke="#111" stroke-width="1.4"/>
+        <path d="M7 14q5 5 10 0" fill="none" stroke="#5a3a00" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Live Stats Counters -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="bg-white rounded-xl p-4 border border-[#ffe0b2] shadow-xs text-center">
+      <div class="text-3xl font-extrabold text-[#e65100]" th:text="${usersCount}">0</div>
+      <div class="text-xs text-[#795548] font-medium mt-1">Участников в чате</div>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-[#ffe0b2] shadow-xs text-center">
+      <div class="text-3xl font-extrabold text-[#0e4b5a]" th:text="${msgCount}">0</div>
+      <div class="text-xs text-[#795548] font-medium mt-1">Отправлено сообщений</div>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-[#ffe0b2] shadow-xs text-center">
+      <div class="text-3xl font-extrabold text-[#2e7d32]">4</div>
+      <div class="text-xs text-[#795548] font-medium mt-1">Активных умных бота</div>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-[#ffe0b2] shadow-xs text-center">
+      <div class="text-3xl font-extrabold text-[#d81b60]">100%</div>
+      <div class="text-xs text-[#795548] font-medium mt-1">Уровень настроения</div>
+    </div>
+  </div>
+
+  <!-- Feature Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <a th:href="@{/chat}" class="bg-white rounded-xl p-5 border border-[#ffe0b2] hover:border-[#ff9800] shadow-xs hover:shadow-md transition-all cursor-pointer group block">
+      <div class="w-10 h-10 rounded-lg bg-[#fff3e0] text-[#e65100] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+      </div>
+      <h3 class="font-bold text-[#3e2723] text-base mb-1">Чат с ответами и ботами</h3>
+      <p class="text-xs text-[#6d4c41] leading-relaxed">Telegram-стиль ответов, SVG-лица настроения, генератор комплиментов и диалоги между ботами Аней, Максом, Лисой и Солнышком.</p>
+    </a>
+
+    <a th:href="@{/compass}" class="bg-white rounded-xl p-5 border border-[#ffe0b2] hover:border-[#ff9800] shadow-xs hover:shadow-md transition-all cursor-pointer group block">
+      <div class="w-10 h-10 rounded-lg bg-[#fce4ec] text-[#d81b60] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      </div>
+      <h3 class="font-bold text-[#3e2723] text-base mb-1">Компас и Счётчик Гейгера</h3>
+      <p class="text-xs text-[#6d4c41] leading-relaxed">Стрелка указывает на ближайшего участника в реальности. Счётчик Гейгера щёлкает чаще со звуком Web Audio при приближении к человеку!</p>
+    </a>
+
+    <a th:href="@{/map}" class="bg-white rounded-xl p-5 border border-[#ffe0b2] hover:border-[#ff9800] shadow-xs hover:shadow-md transition-all cursor-pointer group block">
+      <div class="w-10 h-10 rounded-lg bg-[#e0f2f1] text-[#00897b] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <h3 class="font-bold text-[#3e2723] text-base mb-1">Яндекс.Карты участников</h3>
+      <p class="text-xs text-[#6d4c41] leading-relaxed">Метки всех участников с их настроением и городами. Интерактивная карта с определением вашей геолокации.</p>
+    </a>
+
+    <a th:href="@{/calc}" class="bg-white rounded-xl p-5 border border-[#ffe0b2] hover:border-[#ff9800] shadow-xs hover:shadow-md transition-all cursor-pointer group block">
+      <div class="w-10 h-10 rounded-lg bg-[#e8eaf6] text-[#3949ab] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+      </div>
+      <h3 class="font-bold text-[#3e2723] text-base mb-1">Калькулятор</h3>
+      <p class="text-xs text-[#6d4c41] leading-relaxed">Удобный калькулятор прямо в интерфейсе: проценты, квадратный корень, смена знака, журнал вычислений и поддержка клавиатуры.</p>
+    </a>
+
+    <a th:href="@{/upgrader}" class="bg-white rounded-xl p-5 border border-[#ffe0b2] hover:border-[#ff9800] shadow-xs hover:shadow-md transition-all cursor-pointer group block">
+      <div class="w-10 h-10 rounded-lg bg-[#fff3e0] text-[#f57c00] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+      </div>
+      <h3 class="font-bold text-[#3e2723] text-base mb-1">Upgrader настроения</h3>
+      <p class="text-xs text-[#6d4c41] leading-relaxed">Колесо шанса для апгрейда значков и наград за Искры, которые начисляются за сообщения в чате.</p>
+    </a>
+
+    <a th:href="@{/shop}" class="bg-white rounded-xl p-5 border border-[#ffe0b2] hover:border-[#ff9800] shadow-xs hover:shadow-md transition-all cursor-pointer group block">
+      <div class="w-10 h-10 rounded-lg bg-[#e0f7fa] text-[#0e4b5a] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      </div>
+      <h3 class="font-bold text-[#3e2723] text-base mb-1">Магазин скинов и радио</h3>
+      <p class="text-xs text-[#6d4c41] leading-relaxed">Покупайте за Искры (✨) яркие скины оформления чата и открывайте новые живые радиостанции для плеера.</p>
+    </a>
+
+    <a th:href="@{/profile}" class="bg-white rounded-xl p-5 border border-[#ffe0b2] hover:border-[#ff9800] shadow-xs hover:shadow-md transition-all cursor-pointer group block">
+      <div class="w-10 h-10 rounded-lg bg-[#fff8e1] text-[#f57f17] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+      </div>
+      <h3 class="font-bold text-[#3e2723] text-base mb-1">Анкета из 35+ вопросов</h3>
+      <p class="text-xs text-[#6d4c41] leading-relaxed">Все поля по ТЗ (рост, вес, темперамент, мечта, любимое радио и др.) шифруются AES-256-GCM в базе H2.</p>
+    </a>
+
+    <a th:if="${me != null and me.role == 'ADMIN'}" th:href="@{/h2-console}" target="_blank" class="bg-white rounded-xl p-5 border border-[#ffe0b2] hover:border-[#ff9800] shadow-xs hover:shadow-md transition-all cursor-pointer group block">
+      <div class="w-10 h-10 rounded-lg bg-[#efebe9] text-[#4e342e] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-5 h-5 text-[#bf360c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+      </div>
+      <div class="flex items-center gap-1.5 mb-1">
+        <h3 class="font-bold text-[#3e2723] text-base">Консоль базы данных H2</h3>
+        <span class="text-[9px] bg-red-100 text-red-800 font-bold px-1.5 py-0.5 rounded">АДМИН</span>
+      </div>
+      <p class="text-xs text-[#6d4c41] leading-relaxed">Прямой доступ к таблицам USERS и MESSAGES с проверкой шифрования AES-GCM и BCrypt.</p>
+    </a>
+  </div>
+
+  <!-- Radio & Clock info reminder -->
+  <div class="bg-gradient-to-r from-[#0b3844] to-[#125869] text-[#fff6d6] rounded-xl p-4 flex items-center gap-3 shadow-sm">
+    <svg class="w-6 h-6 text-[#ffd84d] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>
+    <div class="text-xs">
+      <strong>Ретро-радио в левом верхнем углу</strong> играет живые музыкальные потоки (Record Rock, Наше Радио, Радио Рекорд, Европа Плюс + новые волны из Магазина), а <strong>круглые часы справа</strong> показывают точное время!
+    </div>
+  </div>
+</main>
+<nav th:replace="~{layout :: tabs('home')}"></nav>
+</body>
+</html>

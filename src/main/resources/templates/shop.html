@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Магазин')}"></head>
+<body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
+<header th:replace="~{layout :: top(true)}"></header>
+<div th:replace="~{layout :: topnav('shop')}"></div>
+<main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-6 pb-24 md:pb-10 space-y-6">
+  <!-- Header Banner -->
+  <div class="bg-gradient-to-r from-[#0b3844] via-[#0e4b5a] to-[#125869] text-[#fff6d6] rounded-2xl p-5 border-2 border-[#ffb300]/50 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#ffd84d] to-[#ff9800] text-[#2a1200] flex items-center justify-center shadow-md shrink-0">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-black text-white tracking-tight">Магазин скинов чата и радиостанций</h2>
+        <p class="text-xs text-[#b2ebf2]">Покупайте темы оформления для чата и новые живые радиостанции за Искры (✨). Искры даются за сообщения в чате (+25 ✨) и в Upgrader.</p>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+      <div class="bg-[#07242c] border border-[#ffb300]/40 rounded-xl px-3.5 py-2 flex items-center gap-2">
+        <span class="text-xs text-[#b2ebf2]">Баланс:</span>
+        <strong id="shopSparks" th:text="${me.sparks} + ' ✨'" class="text-base font-black text-[#ffd84d]">1000 ✨</strong>
+      </div>
+      <button type="button" id="boostBtn" hidden class="px-3 py-2 bg-[#ffd84d] hover:bg-[#ffc107] text-black font-extrabold text-xs rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1">
+        +200 ✨
+      </button>
+    </div>
+  </div>
+
+  <!-- Category Switcher -->
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-[#ffe0b2] shadow-xs">
+      <button type="button" id="tabSkinsBtn" class="px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer bg-[#0e4b5a] text-[#ffd84d] shadow-xs">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+        <span id="tabSkinsLabel">Скины для чата</span>
+      </button>
+      <button type="button" id="tabRadiosBtn" class="px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer text-[#6d4c41] hover:bg-[#fff8ec]">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>
+        <span id="tabRadiosLabel">Радиостанции</span>
+      </button>
+    </div>
+
+    <a th:href="@{/chat}" class="px-3.5 py-2 bg-[#fff3e0] hover:bg-[#ffe0b2] text-[#d84315] text-xs font-bold rounded-xl border border-[#ffcc80] flex items-center gap-1.5 cursor-pointer transition-colors">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+      <span>Проверить в чате</span>
+    </a>
+  </div>
+
+  <div id="shopNotice" hidden role="status" class="bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl px-4 py-2.5 text-xs font-bold shadow-xs"></div>
+
+  <div id="radioHint" hidden class="bg-[#fff8ea] border border-[#ffe0b2] rounded-xl px-4 py-3 text-xs text-[#5d4037]">
+    Купленные радиостанции сразу добавляются в ретро-радио в шапке сайта (переключение кнопками <strong>⏮ / ⏭</strong>) и могут быть запущены одним нажатием ниже.
+  </div>
+
+  <div id="skinsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  <div id="radiosGrid" hidden class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+</main>
+<nav th:replace="~{layout :: tabs('shop')}"></nav>
+<script th:src="@{/js/shop.js}"></script>
+</body>
+</html>

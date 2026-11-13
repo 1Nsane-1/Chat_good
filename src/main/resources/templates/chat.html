@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Чат')}"></head>
+<body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
+<header th:replace="~{layout :: top(true)}"></header>
+<div th:replace="~{layout :: topnav('chat')}"></div>
+<main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-6 pb-16">
+  <div id="chatShell"
+       class="flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-150px)] max-h-[820px] rounded-2xl border shadow-sm overflow-hidden mb-16 md:mb-4 relative transition-colors bg-white border-[#ffe0b2]"
+       th:attr="data-skin=${!#strings.isEmpty(me.activeSkin) ? me.activeSkin : 'classic'},data-login=${me.login},data-role=${me.role},data-sparks=${me.sparks}">
+
+    <!-- Chat Header Bar -->
+    <div id="chatHeader" class="px-4 py-2.5 border-b flex flex-wrap items-center justify-between gap-2 transition-colors bg-[#fff8ea] border-[#ffe2a8]">
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse shrink-0"></div>
+        <div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <h2 id="chatTitle" class="text-sm font-bold text-[#3e2723]">Общий чат радости</h2>
+            <span th:if="${me.role == 'ADMIN'}" class="text-[9px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded border border-purple-300 flex items-center gap-0.5">
+              <svg class="w-3 h-3 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>
+              <span th:text="'Главный Админ (' + ${me.displayName} + ')'">Главный Админ</span>
+            </span>
+          </div>
+          <p id="chatSub" class="text-[11px] text-[#795548]">
+            Баланс: <b id="chatSparks" th:text="${me.sparks}">1000</b> ✨ (+25 ✨ за сообщение) · Люди и боты (Аня, Макс, Лиса, Солнышко) в сети
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+        <select id="skinSelect" hidden title="Выбрать скин чата" class="text-[11px] font-bold px-2 py-1 rounded-lg border outline-none cursor-pointer bg-white text-[#3e2723] border-[#ffcc80]"></select>
+        <a id="chatShopLink" th:href="@{/shop}" class="px-2.5 py-1 text-[11px] font-bold rounded-lg border flex items-center gap-1 transition-colors cursor-pointer bg-[#fff3e0] hover:bg-[#ffe0b2] text-[#d84315] border-[#ffcc80]" title="Магазин скинов чата">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          <span>Скины и Радио</span>
+        </a>
+        <button th:if="${me.role == 'ADMIN'}" type="button" id="adminToggleBtn"
+                class="px-3 py-1.5 text-xs font-black rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer shadow-xs bg-gradient-to-r from-[#ffe082] to-[#ffd54f] text-[#3e2723] hover:from-[#ffd54f] hover:to-[#ffca28] border-[#ffb300]">
+          <svg class="w-3.5 h-3.5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>
+          <span>Панель Администратора</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin Moderation Drawer -->
+    <div id="adminPanel" th:if="${me.role == 'ADMIN'}" hidden class="bg-[#fff9ea] border-b-2 border-purple-500 p-4 text-xs shadow-xl z-30 max-h-[420px] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 mb-3 border-b border-[#ffe0b2]">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-purple-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>
+          <div>
+            <h3 class="font-black text-sm text-[#3e2723]">Панель Администратора · Роли и Модерация</h3>
+            <p class="text-[10px] text-[#795548]">Назначайте роли (USER / MODERATOR / ADMIN), выдавайте бан и мут участникам и ботам.</p>
+          </div>
+        </div>
+        <button type="button" id="closeAdminPanel" class="text-gray-500 hover:text-black p-1 bg-white/60 rounded-lg cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div id="adminUsersList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5"></div>
+    </div>
+
+    <!-- Moderation/Notice Bar -->
+    <div id="chatNoticeBar" hidden class="bg-red-500 text-white text-xs px-4 py-1.5 flex items-center justify-between font-bold">
+      <span id="chatNoticeText"></span>
+    </div>
+
+    <!-- Messages Scroll Area -->
+    <div id="msgs" class="flex-1 p-3 md:p-4 overflow-y-auto space-y-3 transition-colors bg-[#fffbf2]"></div>
+
+    <!-- Telegram Reply Bar -->
+    <div id="replybar" hidden class="border-t px-4 py-2 flex items-center justify-between text-xs bg-[#fff8ea] border-[#ffe8b8] text-[#795548]">
+      <div class="flex items-center gap-2 overflow-hidden">
+        <svg class="w-4 h-4 text-[#ff9800] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>
+        <div class="overflow-hidden">
+          <span id="replyAuthor" class="font-bold mr-1">Ответ:</span>
+          <span id="replytext" class="opacity-80 truncate inline-block max-w-[200px] sm:max-w-md align-bottom"></span>
+        </div>
+      </div>
+      <button type="button" id="replycancel" class="p-1 hover:bg-black/10 rounded-full cursor-pointer" title="Отменить ответ">&times;</button>
+    </div>
+
+    <!-- Mood Selector Toolbar -->
+    <div id="moodBar" class="px-3 py-1.5 border-t flex items-center justify-between gap-2 overflow-x-auto transition-colors bg-[#fff8ea] border-[#ffe8b8] text-[#795548]">
+      <div class="flex items-center gap-1.5">
+        <span class="text-[11px] font-medium mr-1 hidden sm:inline">Моё настроение:</span>
+        <div id="emojis" class="flex items-center gap-1"></div>
+      </div>
+      <button type="button" id="compliment" class="text-xs font-semibold px-2.5 py-1 rounded-lg border transition-colors flex items-center gap-1 cursor-pointer whitespace-nowrap bg-[#fff3e0] hover:bg-[#ffe0b2] text-[#d84315] border-[#ffcc80]">
+        <svg class="w-3.5 h-3.5 text-[#ff9800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+        <span>Комплимент</span>
+      </button>
+    </div>
+
+    <!-- Ban / Mute / Input Form -->
+    <div th:if="${me.banned}" class="p-3 bg-red-100 border-t border-red-300 text-center text-xs text-red-800 font-bold">
+      🚫 Ваш аккаунт заблокирован администратором. Отправка сообщений недоступна.
+    </div>
+    <div th:if="${!me.banned and me.mutedNow}" class="p-3 bg-amber-100 border-t border-amber-300 text-center text-xs text-amber-900 font-bold">
+      🔇 На вас наложен временный мут. Отправка сообщений временно ограничена.
+    </div>
+    <form id="form" th:if="${!me.banned and !me.mutedNow}" class="p-2 md:p-3 border-t flex gap-2 transition-colors bg-white border-[#ffe0b2]">
+      <input id="text" maxlength="500" placeholder="Напиши что-нибудь доброе в чат..." autocomplete="off"
+             class="flex-1 px-4 py-2.5 text-sm border focus:border-[#ff9800] focus:ring-2 focus:ring-[#ff9800]/30 rounded-xl outline-none transition-all bg-[#fffef9] border-[#ffcc80] text-[#2d2a26] placeholder:text-gray-400">
+      <button id="sendBtn" type="submit" class="px-4 py-2.5 font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-gradient-to-r from-[#ff9800] to-[#f57c00] hover:from-[#f57c00] hover:to-[#e65100] text-white" aria-label="Отправить сообщение">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        <span class="hidden sm:inline text-xs">Отправить</span>
+      </button>
+    </form>
+  </div>
+</main>
+<nav th:replace="~{layout :: tabs('chat')}"></nav>
+<script th:src="@{/js/chat.js}"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Вход')}"></head>
+<body class="min-h-screen bg-gradient-to-b from-[#fff8ea] to-[#ffe8c2] text-[#2d2a26] flex flex-col font-sans">
+<header th:replace="~{layout :: top(true)}"></header>
+<main class="flex-1 max-w-3xl w-full mx-auto px-3 sm:px-6 py-8 space-y-6">
+  <div class="text-center bg-gradient-to-r from-[#072d37] to-[#0e4b5a] text-[#fff8e7] rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-[#ffb300]/60">
+    <span class="inline-block bg-[#ffd84d]/20 text-[#ffe28a] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+      Учебная практика · Чат Хорошее Настроение
+    </span>
+    <h1 class="text-2xl sm:text-3xl font-black text-[#ffd84d] tracking-tight">Вход в аккаунт</h1>
+    <p class="text-xs sm:text-sm text-[#c4f0e9] mt-2">Введите ваши логин и пароль для входа в Чат Хорошего Настроения.</p>
+    <div class="mt-5 inline-flex bg-[#052028] p-1 rounded-xl border border-[#1f5d6b]">
+      <a th:href="@{/register}" class="px-4 py-2 rounded-lg text-xs font-bold text-[#a8ded6] hover:text-white transition-all">Регистрация</a>
+      <a th:href="@{/login}" class="px-4 py-2 rounded-lg text-xs font-bold bg-[#ff9800] text-white shadow">Вход</a>
+    </div>
+  </div>
+
+  <div th:if="${error}" class="bg-red-50 border-2 border-red-400 text-red-800 px-4 py-3 rounded-2xl text-xs font-bold shadow-xs max-w-md mx-auto" th:text="${error}"></div>
+
+  <form th:action="@{/login}" method="post" class="bg-white rounded-2xl p-6 border border-[#ffe0b2] shadow-sm space-y-4 max-w-md mx-auto w-full">
+    <h3 class="text-base font-bold text-[#3e2723] pb-2 border-b border-[#ffe8b8]">🔑 Авторизация</h3>
+    <div class="space-y-3 text-xs">
+      <div>
+        <label class="block text-[#5d4037] font-semibold mb-1">Логин *</label>
+        <input name="login" autocomplete="username" required placeholder="Введите ваш логин"
+               class="w-full px-3 py-2.5 border rounded-xl bg-[#fffef9] border-[#ffe0b2] focus:border-[#ff9800] outline-none font-mono">
+      </div>
+      <div>
+        <label class="block text-[#5d4037] font-semibold mb-1">Пароль *</label>
+        <input name="password" type="password" autocomplete="current-password" required placeholder="Введите пароль"
+               class="w-full px-3 py-2.5 border rounded-xl bg-[#fffef9] border-[#ffe0b2] focus:border-[#ff9800] outline-none font-mono">
+      </div>
+    </div>
+    <button type="submit" class="w-full py-3 bg-gradient-to-r from-[#ff9800] via-[#f57c00] to-[#e65100] hover:brightness-110 text-white font-black text-sm rounded-xl shadow-md transition-all cursor-pointer">
+      Войти в чат
+    </button>
+    <p class="text-center text-xs text-[#6d4c41] pt-1">
+      Нет аккаунта? <a th:href="@{/register}" class="text-[#e65100] font-bold underline">Зарегистрироваться</a>
+    </p>
+  </form>
+</main>
+</body>
+</html>

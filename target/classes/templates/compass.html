@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Компас')}"></head>
+<body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
+<header th:replace="~{layout :: top(true)}"></header>
+<div th:replace="~{layout :: topnav('compass')}"></div>
+<main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-6 pb-20 md:pb-8 space-y-6">
+  <!-- Compass Card -->
+  <div class="bg-white rounded-2xl p-5 border border-[#ffe0b2] shadow-xs">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#ffe8b8]">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-[#fff3e0] text-[#e65100] flex items-center justify-center">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-[#3e2723]">Компас на участников чата</h2>
+          <p class="text-xs text-[#795548]">Определяет азимут и расстояние до собеседника в реальности</p>
+        </div>
+      </div>
+
+      <button type="button" id="start" class="px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer bg-[#ff9800] hover:bg-[#f57c00] text-white border-[#f57c00] shadow-xs">
+        Включить гироскоп
+      </button>
+    </div>
+
+    <div class="mt-6 flex flex-col items-center">
+      <div class="relative w-64 h-64 md:w-72 md:h-72 rounded-full border-8 border-[#ffb300] bg-gradient-to-b from-[#fffef7] to-[#fff3d4] shadow-lg flex items-center justify-center select-none">
+        <div id="rose" class="absolute inset-0 transition-transform duration-200 flex items-center justify-center">
+          <div class="absolute top-2 font-black text-red-600 text-base tracking-wider">С</div>
+          <div class="absolute right-3 font-bold text-[#0e4b5a] text-sm">В</div>
+          <div class="absolute bottom-2 font-bold text-[#0e4b5a] text-sm">Ю</div>
+          <div class="absolute left-3 font-bold text-[#0e4b5a] text-sm">З</div>
+          <svg class="w-full h-full p-6 opacity-30">
+            <circle cx="50%" cy="50%" r="46%" fill="none" stroke="#5d4037" stroke-width="1" stroke-dasharray="3 6" />
+            <circle cx="50%" cy="50%" r="35%" fill="none" stroke="#5d4037" stroke-width="1" />
+          </svg>
+        </div>
+
+        <div id="arrow" class="absolute inset-0 transition-transform duration-300 flex items-center justify-center pointer-events-none">
+          <div class="relative flex flex-col items-center -translate-y-6">
+            <div class="w-0 h-0 border-x-12 border-x-transparent border-b-[45px] border-b-[#e0245e] filter drop-shadow"></div>
+            <div class="w-3.5 h-14 bg-gradient-to-b from-[#e0245e] to-[#880e4f] rounded-b-sm"></div>
+            <div class="w-0 h-0 border-x-8 border-x-transparent border-t-[24px] border-t-gray-700 mt-2"></div>
+          </div>
+        </div>
+
+        <div class="w-6 h-6 rounded-full bg-gradient-to-b from-[#ffd84d] to-[#e0a100] border-2 border-[#fff] shadow z-10 flex items-center justify-center">
+          <div class="w-2 h-2 rounded-full bg-[#0e4b5a]"></div>
+        </div>
+      </div>
+
+      <div class="mt-4 text-center space-y-1">
+        <div id="dist" class="text-2xl font-black text-[#e65100]">120 м</div>
+        <div class="text-xs text-[#5d4037] font-medium flex items-center justify-center gap-1.5 flex-wrap">
+          <span>Курс: <strong id="bearingVal">45°</strong></span>
+          <span>·</span>
+          <span>Компас: <strong id="headingVal">0°</strong></span>
+          <span>·</span>
+          <span>Цель: <strong id="who">Нажмите «Включить гироскоп»</strong></span>
+        </div>
+        <p id="warn" class="text-[11px] text-red-600 font-semibold"></p>
+      </div>
+
+      <div class="w-full max-w-sm mt-4 p-3 bg-[#fff8ea] rounded-xl border border-[#ffe0b2] text-xs">
+        <div class="flex justify-between font-medium text-[#5d4037] mb-1">
+          <span>Симуляция поворота телефона:</span>
+          <span class="font-bold">0°–359°</span>
+        </div>
+        <input id="sliderHeading" type="range" min="0" max="359" value="0" class="w-full h-1.5 bg-gray-300 accent-[#ff9800] rounded cursor-pointer" aria-label="Угол поворота компаса">
+      </div>
+    </div>
+  </div>
+
+  <!-- Geiger Counter Card -->
+  <div class="bg-gradient-to-b from-[#1b1c1d] to-[#121415] text-[#fff8e7] rounded-2xl p-6 border-2 border-[#ffb300]/40 shadow-xl">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-gray-700">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#26282a] border border-[#ffb300]/50 text-[#ffd84d] flex items-center justify-center">
+          <svg class="w-6 h-6 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-[#ffd84d]">Счётчик Гейгера хорошего настроения</h3>
+          <p class="text-xs text-gray-400">Игровая механика: чем ближе участник, тем чаще щелчки радиоактивности радости!</p>
+        </div>
+      </div>
+
+      <button type="button" id="geiger" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer bg-[#ffd84d] hover:bg-[#ffc107] text-black">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        <span id="geigerBtnLabel">Включить звук щелчков</span>
+      </button>
+    </div>
+
+    <div class="mt-6 space-y-4">
+      <div>
+        <div class="flex justify-between text-xs font-mono text-gray-400 mb-1">
+          <span>Интенсивность радости (CPS)</span>
+          <span id="cpsBanner" class="text-[#ffd84d] font-bold">3.3 щелчков/сек</span>
+        </div>
+        <div class="w-full h-5 bg-[#090a0a] rounded-lg p-0.5 border border-gray-700 overflow-hidden flex">
+          <div id="meter" class="h-full rounded-md transition-all duration-300 bg-gradient-to-r from-green-500 via-yellow-400 to-red-500" style="width: 10%"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="bg-[#242628] p-3 rounded-xl border border-gray-700">
+          <div class="text-xs text-gray-400">Щелчков в сек (CPS)</div>
+          <div id="cps" class="text-2xl font-mono font-bold text-[#3bf08b] mt-0.5">3.3</div>
+        </div>
+        <div class="bg-[#242628] p-3 rounded-xl border border-gray-700">
+          <div class="text-xs text-gray-400">Всего зарегистрировано</div>
+          <div id="total" class="text-2xl font-mono font-bold text-[#ffd84d] mt-0.5">0</div>
+        </div>
+        <div class="bg-[#242628] p-3 rounded-xl border border-gray-700">
+          <div class="text-xs text-gray-400">Дистанция до человека</div>
+          <div id="geigerDist" class="text-2xl font-mono font-bold text-[#38bdf8] mt-0.5">120 м</div>
+        </div>
+        <div class="bg-[#242628] p-3 rounded-xl border border-gray-700">
+          <div class="text-xs text-gray-400">Статус динамика</div>
+          <div id="speakerState" class="text-2xl font-mono font-bold mt-0.5 text-gray-500">БЕЗ ЗВУКА</div>
+        </div>
+      </div>
+
+      <div class="bg-[#242628] p-3 rounded-xl border border-gray-700 text-xs">
+        <div class="flex justify-between font-mono text-gray-300 mb-1">
+          <span>Тестовая симуляция приближения (от 0 м до 400 м):</span>
+          <span id="simDistLabel" class="text-[#ffd84d] font-bold">120 метров</span>
+        </div>
+        <input id="simDistRange" type="range" min="0" max="400" value="120" class="w-full h-1.5 bg-gray-700 accent-[#ffb300] rounded cursor-pointer" aria-label="Тестовая дистанция">
+        <div class="flex justify-between text-[10px] text-gray-500 mt-1">
+          <span>0 м (буря щелчков ~60/с)</span>
+          <span>40 м (~22/с)</span>
+          <span>100 м (~5/с)</span>
+          <span>400 м (фон ~0.3/с)</span>
+        </div>
+      </div>
+
+      <p class="text-[11px] text-gray-400 italic text-center">
+        * Настоящую радиацию мобильные устройства измерять не могут. Функция создана как весёлая игра для поиска друзей в чате на практике!
+      </p>
+    </div>
+  </div>
+</main>
+<nav th:replace="~{layout :: tabs('compass')}"></nav>
+<script th:src="@{/js/geo.js}"></script>
+<script th:src="@{/js/compass.js}"></script>
+</body>
+</html>

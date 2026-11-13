@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e4b5a">
+  <title th:text="${title} + ' · Чат Хорошее настроение'">Чат</title>
+  <link rel="stylesheet" th:href="@{/css/tailwind.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script defer th:src="@{/js/ui.js}"></script>
+  <script defer th:src="@{/js/radio.js}"></script>
+</head>
+<body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
+
+<header th:fragment="top(radio)" class="w-full bg-gradient-to-r from-[#072d37] via-[#0e4b5a] to-[#072d37] border-b-2 border-[#ffb300]/60 shadow-lg text-[#fff6d6] select-none">
+  <div class="max-w-7xl mx-auto px-3 py-2 flex flex-col md:flex-row items-center justify-between gap-3">
+    <!-- LEFT: Retro Radio Player -->
+    <div th:if="${radio}" id="radio"
+         th:attr="data-fav=${favRadio},data-auth=${me != null},data-owned-radios=${me != null and me.ownedRadios != null ? me.ownedRadios : ''}"
+         class="w-full md:w-auto flex-shrink-0 flex items-center justify-between md:justify-start gap-2 bg-[#1b1c1d] border border-[#ffb300]/40 rounded-lg p-2 shadow-inner">
+      <div class="flex flex-col">
+        <div class="flex items-center gap-1.5 mb-1">
+          <svg class="w-3.5 h-3.5 text-[#ffd84d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>
+          <span id="rgenre" class="text-[10px] font-mono tracking-widest text-[#ffcc00] uppercase font-bold">ROCK &amp; METAL</span>
+          <span class="req-bars items-center gap-0.5 ml-1">
+            <span class="w-1 h-3 bg-green-400 animate-pulse rounded-full"></span>
+            <span class="w-1 h-4 bg-yellow-400 animate-pulse rounded-full"></span>
+            <span class="w-1 h-2 bg-red-400 animate-pulse rounded-full"></span>
+          </span>
+        </div>
+
+        <div class="w-44 md:w-48 bg-[#0f1d18] border border-[#234b3f] rounded px-2 py-1 flex items-center justify-between">
+          <span id="rname" class="text-xs font-mono font-bold text-[#3bf08b] truncate">Record Rock</span>
+          <span id="rstate" class="text-[9px] font-mono text-[#ffb300] ml-1">OFF</span>
+        </div>
+
+        <div class="text-[9px] text-[#aaa] font-mono mt-0.5 px-0.5 flex justify-between">
+          <span id="rstatus">Готово</span>
+          <span id="rvolpct">70%</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1 items-center">
+        <div class="flex items-center gap-1">
+          <button type="button" id="rprev" title="Предыдущая" aria-label="Предыдущая радиостанция"
+                  class="w-7 h-7 bg-[#2e3032] hover:bg-[#3d4044] active:bg-[#1a1b1c] border border-gray-600 rounded flex items-center justify-center text-[#ffd84d] transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" x2="5" y1="19" y2="5"/></svg>
+          </button>
+          <button type="button" id="rplay" title="Играть / пауза" aria-label="Включить радио"
+                  class="w-8 h-7 bg-gradient-to-b from-[#e0a100] to-[#b37700] hover:from-[#f0b110] hover:to-[#c48500] border border-[#ffd84d] rounded flex items-center justify-center text-black font-bold transition-all shadow cursor-pointer">
+            <svg class="i-play w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            <svg class="i-pause w-4 h-4 fill-current" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg>
+          </button>
+          <button type="button" id="rnext" title="Следующая" aria-label="Следующая радиостанция"
+                  class="w-7 h-7 bg-[#2e3032] hover:bg-[#3d4044] active:bg-[#1a1b1c] border border-gray-600 rounded flex items-center justify-center text-[#ffd84d] transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" x2="19" y1="5" y2="19"/></svg>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1 w-full px-1">
+          <button type="button" id="rmute" title="Звук" class="text-[#ffd84d] hover:text-white cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </button>
+          <input type="range" id="rvol" min="0" max="1" step="0.05" value="0.7" title="Громкость"
+                 class="w-16 h-1 bg-gray-600 accent-[#ffd84d] rounded cursor-pointer">
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: Smiling Sun Logo + Title -->
+    <a th:href="@{/}" class="cursor-pointer flex items-center justify-center gap-3 px-2 py-1 group hover:opacity-95 transition-all text-center">
+      <div class="relative w-12 h-12 md:w-14 md:h-14 flex-shrink-0">
+        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_2px_8px_rgba(255,200,0,0.5)]">
+          <g stroke="#ffb300" stroke-width="4.5" stroke-linecap="round">
+            <line x1="32" y1="3" x2="32" y2="11"/><line x1="32" y1="53" x2="32" y2="61"/>
+            <line x1="3" y1="32" x2="11" y2="32"/><line x1="53" y1="32" x2="61" y2="32"/>
+            <line x1="11.5" y1="11.5" x2="17.2" y2="17.2"/><line x1="52.5" y1="11.5" x2="46.8" y2="17.2"/>
+            <line x1="11.5" y1="52.5" x2="17.2" y2="46.8"/><line x1="52.5" y1="52.5" x2="46.8" y2="46.8"/>
+          </g>
+          <circle cx="32" cy="32" r="16.5" fill="#ffd400" stroke="#ff9d00" stroke-width="2.5"/>
+          <circle cx="21" cy="36" r="3" fill="#ff7f7f" opacity="0.6"/>
+          <circle cx="43" cy="36" r="3" fill="#ff7f7f" opacity="0.6"/>
+          <rect x="18" y="25" width="12" height="9" rx="3.8" fill="#151515" stroke="#000" stroke-width="1"/>
+          <rect x="34" y="25" width="12" height="9" rx="3.8" fill="#151515" stroke="#000" stroke-width="1"/>
+          <path d="M30 28.5h4" stroke="#151515" stroke-width="2.4"/>
+          <line x1="20" y1="27" x2="25" y2="31" stroke="rgba(255,255,255,0.7)" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="36" y1="27" x2="41" y2="31" stroke="rgba(255,255,255,0.7)" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M23 39.5q9 7.5 18 0" fill="none" stroke="#683900" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="flex flex-col items-center md:items-start">
+        <span style="font-family:'Georgia','Pacifico','Brush Script MT','Caveat',cursive"
+              class="text-2xl sm:text-3xl md:text-4xl italic font-bold tracking-wide text-[#fff3a8] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          Чат Хорошее настроение
+        </span>
+        <span class="text-[11px] font-sans tracking-wide text-[#a2e8dd] opacity-90 hidden sm:inline"
+              th:text="'Учебная практика · Java &amp; H2 · ' + ${me != null and !#strings.isEmpty(me.city) ? me.city : 'Spring Boot'}">
+          Учебная практика · Java &amp; H2 · Spring Boot
+        </span>
+      </div>
+    </a>
+
+    <!-- RIGHT: User Info & Analog Clock -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div class="text-right hidden sm:block">
+        <div th:if="${me != null}">
+          <div class="flex items-center justify-end gap-1.5">
+            <a th:href="@{/profile}" class="text-xs font-semibold text-[#ffd84d] hover:underline" th:text="${me.displayName}">имя</a>
+            <span th:if="${!#strings.isEmpty(me.equippedBadge)}" class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-[#ffd84d] text-black" th:text="${me.equippedBadge}"></span>
+            <span th:if="${me.role == 'ADMIN'}" class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-red-500/80 text-white">👑 Админ</span>
+            <span th:if="${me.role == 'MODERATOR'}" class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-blue-500/80 text-white">🛡️ Модер</span>
+            <span th:if="${me.role != 'ADMIN' and me.role != 'MODERATOR'}" class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-gray-600/80 text-white">👤 Участник</span>
+          </div>
+          <div class="flex items-center justify-end gap-2 text-[11px] mt-0.5">
+            <a th:href="@{/profile}" class="text-[#93dfd5] hover:text-white underline">Мой профиль</a>
+            <a th:href="@{/logout}" class="text-red-300 hover:text-red-100 text-[10px] bg-red-950/40 px-2 py-0.5 rounded border border-red-500/30">Выйти</a>
+          </div>
+        </div>
+        <div th:if="${me == null}" class="flex items-center gap-2 text-xs">
+          <a th:href="@{/login}" class="text-[#93dfd5] hover:text-white underline font-semibold">Войти</a>
+          <a th:href="@{/register}" class="px-2.5 py-1 rounded-lg bg-[#ffd84d] text-black font-bold text-[11px]">Регистрация</a>
+        </div>
+      </div>
+
+      <div class="relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0">
+        <svg id="clock" viewBox="0 0 64 64" class="w-full h-full filter drop-shadow" aria-label="Часы">
+          <circle cx="32" cy="32" r="30" fill="#fffef7" stroke="#ffd84d" stroke-width="3"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="#e0a100" stroke-width="0.8"/>
+          <g stroke="#0e4b5a" stroke-width="2.2" stroke-linecap="round">
+            <line x1="32" y1="5" x2="32" y2="10"/><line x1="59" y1="32" x2="54" y2="32"/>
+            <line x1="32" y1="59" x2="32" y2="54"/><line x1="5" y1="32" x2="10" y2="32"/>
+          </g>
+          <g stroke="#0e4b5a" stroke-width="1.2" stroke-linecap="round" opacity="0.6">
+            <line x1="45.5" y1="8.6" x2="43.5" y2="11.5"/><line x1="55.4" y1="18.5" x2="52.5" y2="20.5"/>
+            <line x1="55.4" y1="45.5" x2="52.5" y2="43.5"/><line x1="45.5" y1="55.4" x2="43.5" y2="52.5"/>
+            <line x1="18.5" y1="55.4" x2="20.5" y2="52.5"/><line x1="8.6" y1="45.5" x2="11.5" y2="43.5"/>
+            <line x1="8.6" y1="18.5" x2="11.5" y2="20.5"/><line x1="18.5" y1="8.6" x2="20.5" y2="11.5"/>
+          </g>
+          <line id="hh" x1="32" y1="32" x2="32" y2="18" stroke="#1a202c" stroke-width="2.8" stroke-linecap="round"/>
+          <line id="mh" x1="32" y1="32" x2="32" y2="12" stroke="#2d3748" stroke-width="2.0" stroke-linecap="round"/>
+          <line id="sh" x1="32" y1="38" x2="32" y2="9" stroke="#e0245e" stroke-width="1.1" stroke-linecap="round"/>
+          <circle cx="32" cy="32" r="2.2" fill="#ffd84d" stroke="#e0245e" stroke-width="1"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Desktop Navigation Bar -->
+<nav th:fragment="topnav(active)" class="hidden md:flex items-center justify-center gap-1.5 bg-[#fff8eb] border-b border-[#ffe2a8] py-2 px-4 shadow-xs sticky top-0 z-30">
+  <div class="flex items-center gap-1 bg-[#f7ebd4] p-1 rounded-xl border border-[#ebd2a7]" th:if="${me != null}">
+    <a th:href="@{/}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'home' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb] hover:text-[#382b1c]'}">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Главная</span>
+    </a>
+    <a th:href="@{/chat}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'chat' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb] hover:text-[#382b1c]'}">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+      <span>Чат</span>
+    </a>
+    <a th:href="@{/upgrader}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'upgrader' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb] hover:text-[#382b1c]'}">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+      <span>Upgrader</span>
+    </a>
+    <a th:href="@{/shop}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'shop' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb] hover:text-[#382b1c]'}">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>Магазин</span>
+    </a>
+    <a th:href="@{/compass}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'compass' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb] hover:text-[#382b1c]'}">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      <span>Компас &amp; Гейгер</span>
+    </a>
+    <a th:href="@{/map}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'map' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb] hover:text-[#382b1c]'}">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Карта</span>
+    </a>
+    <a th:href="@{/calc}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'calc' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb] hover:text-[#382b1c]'}">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+      <span>Калькулятор</span>
+    </a>
+    <a th:href="@{/profile}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'profile' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb] hover:text-[#382b1c]'}">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Анкета</span>
+    </a>
+    <a th:if="${me.role == 'ADMIN'}" th:href="@{/h2-console}" target="_blank"
+       class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all bg-[#105663] text-[#ffe699] hover:bg-[#0c444f]">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+      <span>База H2</span>
+      <span class="text-[9px] bg-[#ffd84d] text-black font-extrabold px-1.5 rounded">АДМИН</span>
+    </a>
+  </div>
+  <div class="flex items-center gap-1 bg-[#f7ebd4] p-1 rounded-xl border border-[#ebd2a7]" th:if="${me == null}">
+    <a th:href="@{/}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all"
+       th:classappend="${active == 'home' ? 'bg-gradient-to-b from-[#ff9a3c] to-[#e0751a] text-white shadow-sm' : 'text-[#6b553e] hover:bg-[#faeedb]'}">Главная</a>
+    <a th:href="@{/login}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium text-[#6b553e] hover:bg-[#faeedb]">Войти</a>
+    <a th:href="@{/register}" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium text-[#6b553e] hover:bg-[#faeedb]">Регистрация</a>
+  </div>
+</nav>
+
+<!-- Mobile Bottom Floating Navigation Bar -->
+<nav th:fragment="tabs(active)" th:if="${me != null}" class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#fffdf8]/95 backdrop-blur-md border-t border-[#ffcc80] shadow-[0_-4px_12px_rgba(0,0,0,0.06)] px-1.5 py-1 flex items-center justify-between gap-1 overflow-x-auto">
+  <a th:href="@{/}" class="shrink-0 min-w-[52px] flex flex-col items-center justify-center py-1 px-1.5 rounded-lg"
+     th:classappend="${active == 'home' ? 'text-[#e0751a] font-bold scale-105' : 'text-[#7a6450]'}">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span class="text-[10px] mt-0.5 whitespace-nowrap">Главная</span>
+  </a>
+  <a th:href="@{/chat}" class="shrink-0 min-w-[52px] flex flex-col items-center justify-center py-1 px-1.5 rounded-lg"
+     th:classappend="${active == 'chat' ? 'text-[#e0751a] font-bold scale-105' : 'text-[#7a6450]'}">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+    <span class="text-[10px] mt-0.5 whitespace-nowrap">Чат</span>
+  </a>
+  <a th:href="@{/upgrader}" class="shrink-0 min-w-[52px] flex flex-col items-center justify-center py-1 px-1.5 rounded-lg"
+     th:classappend="${active == 'upgrader' ? 'text-[#e0751a] font-bold scale-105' : 'text-[#7a6450]'}">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+    <span class="text-[10px] mt-0.5 whitespace-nowrap">Upgrader</span>
+  </a>
+  <a th:href="@{/shop}" class="shrink-0 min-w-[52px] flex flex-col items-center justify-center py-1 px-1.5 rounded-lg"
+     th:classappend="${active == 'shop' ? 'text-[#e0751a] font-bold scale-105' : 'text-[#7a6450]'}">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="text-[10px] mt-0.5 whitespace-nowrap">Магазин</span>
+  </a>
+  <a th:href="@{/compass}" class="shrink-0 min-w-[52px] flex flex-col items-center justify-center py-1 px-1.5 rounded-lg"
+     th:classappend="${active == 'compass' ? 'text-[#e0751a] font-bold scale-105' : 'text-[#7a6450]'}">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+    <span class="text-[10px] mt-0.5 whitespace-nowrap">Компас</span>
+  </a>
+  <a th:href="@{/map}" class="shrink-0 min-w-[52px] flex flex-col items-center justify-center py-1 px-1.5 rounded-lg"
+     th:classappend="${active == 'map' ? 'text-[#e0751a] font-bold scale-105' : 'text-[#7a6450]'}">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span class="text-[10px] mt-0.5 whitespace-nowrap">Карта</span>
+  </a>
+  <a th:href="@{/calc}" class="shrink-0 min-w-[52px] flex flex-col items-center justify-center py-1 px-1.5 rounded-lg"
+     th:classappend="${active == 'calc' ? 'text-[#e0751a] font-bold scale-105' : 'text-[#7a6450]'}">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/></svg>
+    <span class="text-[10px] mt-0.5 whitespace-nowrap">Счёт</span>
+  </a>
+  <a th:href="@{/profile}" class="shrink-0 min-w-[52px] flex flex-col items-center justify-center py-1 px-1.5 rounded-lg"
+     th:classappend="${active == 'profile' ? 'text-[#e0751a] font-bold scale-105' : 'text-[#7a6450]'}">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span class="text-[10px] mt-0.5 whitespace-nowrap">Профиль</span>
+  </a>
+</nav>
+
+<div th:fragment="field(name,label,type)" class="field">
+  <label class="block text-[#5d4037] font-semibold mb-1" th:text="${label}">Поле</label>
+  <input th:type="${type}" th:field="*{__${name}__}" step="any"
+         class="w-full px-3 py-2 border rounded-xl bg-[#fffef9] border-[#ffe0b2] focus:border-[#ff9800] outline-none">
+  <small class="block text-red-600 text-[11px] font-semibold mt-1" th:if="${#fields.hasErrors(name)}" th:errors="*{__${name}__}"></small>
+</div>
+
+<div th:fragment="select(name,label,options)" class="field">
+  <label class="block text-[#5d4037] font-semibold mb-1" th:text="${label}">Список</label>
+  <select th:field="*{__${name}__}"
+          class="w-full px-3 py-2 border rounded-xl bg-[#fffef9] border-[#ffe0b2] focus:border-[#ff9800] outline-none">
+    <option value="">— выбери —</option>
+    <option th:each="o : ${#strings.listSplit(options, ';')}" th:value="${o}" th:text="${o}">вариант</option>
+  </select>
+  <small class="block text-red-600 text-[11px] font-semibold mt-1" th:if="${#fields.hasErrors(name)}" th:errors="*{__${name}__}"></small>
+</div>
+
+<th:block th:fragment="profileFields">
+  <h3 class="col-span-full text-base font-bold text-[#3e2723] pt-3 pb-1.5 border-b border-[#ffe8b8]">1. Как к тебе обращаться и контакты</h3>
+  <div th:replace="~{layout :: field('displayName','Ник в чате *','text')}"></div>
+  <div th:replace="~{layout :: field('lastName','Фамилия *','text')}"></div>
+  <div th:replace="~{layout :: field('firstName','Имя *','text')}"></div>
+  <div th:replace="~{layout :: field('middleName','Отчество (если есть)','text')}"></div>
+  <div th:replace="~{layout :: field('email','Email *','email')}"></div>
+  <div th:replace="~{layout :: field('phone','Телефон *','tel')}"></div>
+
+  <h3 class="col-span-full text-base font-bold text-[#3e2723] pt-4 pb-1.5 border-b border-[#ffe8b8]">2. Анкета и местоположение</h3>
+  <div th:replace="~{layout :: select('gender','Пол *','Мужской;Женский;Не хочу говорить')}"></div>
+  <div th:replace="~{layout :: field('birthDate','Дата рождения *','date')}"></div>
+  <div th:replace="~{layout :: field('birthPlace','Место рождения *','text')}"></div>
+  <div th:replace="~{layout :: field('city','Город, где живёшь *','text')}"></div>
+  <div th:replace="~{layout :: select('maritalStatus','Семейное положение *','Не женат / не замужем;Женат / замужем;В отношениях;В разводе;Вдовец / вдова')}"></div>
+  <div th:replace="~{layout :: select('hasChildren','Наличие детей *','Нет;Есть;Планирую')}"></div>
+  <div th:replace="~{layout :: select('education','Образование *','Среднее;Среднее специальное;Неоконченное высшее;Высшее;Учёная степень')}"></div>
+
+  <h3 class="col-span-full text-base font-bold text-[#3e2723] pt-4 pb-1.5 border-b border-[#ffe8b8]">3. Внешность и параметры</h3>
+  <div th:replace="~{layout :: field('height','Рост, см *','number')}"></div>
+  <div th:replace="~{layout :: field('weight','Вес, кг *','number')}"></div>
+  <div th:replace="~{layout :: select('eyeColor','Цвет глаз *','Карие;Голубые;Зелёные;Серые;Чёрные;Другой')}"></div>
+  <div th:replace="~{layout :: select('hairColor','Цвет волос *','Блонд;Русые;Рыжие;Каштановые;Чёрные;Седые;Другой')}"></div>
+  <div th:replace="~{layout :: select('bodyType','Телосложение *','Худощавое;Спортивное;Среднее;Плотное;Полное')}"></div>
+
+  <h3 class="col-span-full text-base font-bold text-[#3e2723] pt-4 pb-1.5 border-b border-[#ffe8b8]">4. Характер и мировоззрение</h3>
+  <div th:replace="~{layout :: field('character','Основные черты характера *','text')}"></div>
+  <div th:replace="~{layout :: select('temperament','Тип темперамента *','Сангвиник;Холерик;Флегматик;Меланхолик')}"></div>
+  <div th:replace="~{layout :: select('humor','Чувство юмора *','Острое и язвительное;Доброе;Чёрный юмор;Самоирония;Абсурдное;Скромное')}"></div>
+  <div th:replace="~{layout :: select('mood','Настроение сейчас *','Отличное;Бодрое;Влюблённое;Сонное;Задумчивое;Шальное')}"></div>
+  <div th:replace="~{layout :: field('dream','Моя мечта *','text')}"></div>
+  <div th:replace="~{layout :: field('valuesMost','Больше всего в человеке ценю *','text')}"></div>
+  <div th:replace="~{layout :: field('hateMost','Больше всего в человеке ненавижу *','text')}"></div>
+
+  <h3 class="col-span-full text-base font-bold text-[#3e2723] pt-4 pb-1.5 border-b border-[#ffe8b8]">5. Привычки, вкусы, хобби и радио</h3>
+  <div th:replace="~{layout :: select('smoking','Отношение к курению *','Резко отрицательное;Отрицательное;Нейтральное;Положительное;Курю')}"></div>
+  <div th:replace="~{layout :: select('alcohol','Отношение к спиртному *','Не пью;Резко отрицательное;Отрицательное;Нейтральное;Умеренно;Люблю')}"></div>
+  <div th:replace="~{layout :: field('favFood','Любимая еда *','text')}"></div>
+  <div th:replace="~{layout :: select('likeCooking','Люблю ли я готовить *','Да, обожаю;Иногда;Нет, не люблю')}"></div>
+  <div th:replace="~{layout :: field('favDrink','Любимый напиток *','text')}"></div>
+  <div th:replace="~{layout :: field('restType','Любимый вид отдыха *','text')}"></div>
+  <div th:replace="~{layout :: field('hobby','Хобби *','text')}"></div>
+  <div th:replace="~{layout :: field('favAnimal','Любимое животное *','text')}"></div>
+  <div th:replace="~{layout :: field('petName','Кличка животного (если есть)','text')}"></div>
+  <div th:replace="~{layout :: field('favMusic','Любимая музыка / исполнитель *','text')}"></div>
+  <div th:replace="~{layout :: field('favMovie','Любимый фильм *','text')}"></div>
+  <div th:replace="~{layout :: field('favLiterature','Любимое в литературе *','text')}"></div>
+  <div th:replace="~{layout :: select('favSeason','Любимое время года *','Зима;Весна;Лето;Осень')}"></div>
+  <div th:replace="~{layout :: field('favColor','Любимый цвет *','text')}"></div>
+  <div th:replace="~{layout :: field('favRadio','Любимая радиостанция *','text')}"></div>
+  <div th:replace="~{layout :: field('superpower','Какую суперсилу выбрал бы *','text')}"></div>
+  <div th:replace="~{layout :: field('happyThing','Что быстрее всего поднимает настроение *','text')}"></div>
+
+  <div class="field col-span-full pt-1">
+    <label class="block text-[#5d4037] font-semibold mb-1">О себе (до 500 символов)</label>
+    <textarea th:field="*{aboutMe}" rows="3" class="w-full px-3 py-2 border rounded-xl bg-[#fffef9] border-[#ffe0b2] focus:border-[#ff9800] outline-none"></textarea>
+    <small class="block text-red-600 text-[11px] font-semibold mt-1" th:if="${#fields.hasErrors('aboutMe')}" th:errors="*{aboutMe}"></small>
+  </div>
+</th:block>
+</body>
+</html>

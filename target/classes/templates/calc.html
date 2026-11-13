@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{layout :: head('Калькулятор')}"></head>
+<body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
+<header th:replace="~{layout :: top(true)}"></header>
+<div th:replace="~{layout :: topnav('calc')}"></div>
+<main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-6 pb-20 md:pb-8">
+  <div class="max-w-md mx-auto space-y-6">
+    <div class="bg-gradient-to-b from-[#2a2c2e] to-[#1a1b1c] rounded-3xl p-6 shadow-2xl border-4 border-[#ffb300]/50 text-white select-none">
+      <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-700">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-[#ffb300] rounded-lg text-black flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+          </div>
+          <span class="font-mono text-xs font-bold tracking-wider text-[#ffd84d] uppercase">Калькулятор практики</span>
+        </div>
+        <span class="text-[10px] font-mono text-gray-400">AUTO-FLOAT 10D</span>
+      </div>
+
+      <div class="bg-[#0b1612] border-2 border-[#1e4235] rounded-2xl p-4 mb-5 text-right font-mono shadow-inner">
+        <div id="hist" class="h-6 text-xs text-[#6ee7b7] font-semibold tracking-wider overflow-hidden truncate"> </div>
+        <div id="disp" class="text-3xl sm:text-4xl font-black text-[#34d399] tracking-wider truncate py-1">0</div>
+      </div>
+
+      <div class="grid grid-cols-4 gap-2.5" id="keys">
+        <button type="button" data-k="C" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#3b3e42] hover:bg-[#484c52] text-[#ffcc80] border border-gray-600">C</button>
+        <button type="button" data-k="⌫" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#3b3e42] hover:bg-[#484c52] text-[#ffcc80] border border-gray-600">⌫</button>
+        <button type="button" data-k="%" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#3b3e42] hover:bg-[#484c52] text-[#ffcc80] border border-gray-600">%</button>
+        <button type="button" data-k="÷" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-gradient-to-b from-[#0e4b5a] to-[#07323d] hover:bg-[#12586a] text-[#ffd84d] border border-[#226778]">÷</button>
+
+        <button type="button" data-k="7" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">7</button>
+        <button type="button" data-k="8" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">8</button>
+        <button type="button" data-k="9" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">9</button>
+        <button type="button" data-k="×" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-gradient-to-b from-[#0e4b5a] to-[#07323d] hover:bg-[#12586a] text-[#ffd84d] border border-[#226778]">×</button>
+
+        <button type="button" data-k="4" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">4</button>
+        <button type="button" data-k="5" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">5</button>
+        <button type="button" data-k="6" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">6</button>
+        <button type="button" data-k="−" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-gradient-to-b from-[#0e4b5a] to-[#07323d] hover:bg-[#12586a] text-[#ffd84d] border border-[#226778]">−</button>
+
+        <button type="button" data-k="1" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">1</button>
+        <button type="button" data-k="2" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">2</button>
+        <button type="button" data-k="3" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">3</button>
+        <button type="button" data-k="+" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-gradient-to-b from-[#0e4b5a] to-[#07323d] hover:bg-[#12586a] text-[#ffd84d] border border-[#226778]">+</button>
+
+        <button type="button" data-k="±" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">±</button>
+        <button type="button" data-k="0" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">0</button>
+        <button type="button" data-k="." class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-[#26282b] hover:bg-[#32353a] text-white border border-gray-700">.</button>
+        <button type="button" data-k="√" class="py-3.5 rounded-2xl text-lg font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-gradient-to-b from-[#0e4b5a] to-[#07323d] hover:bg-[#12586a] text-[#ffd84d] border border-[#226778]">√</button>
+
+        <button type="button" data-k="=" class="col-span-4 py-4 rounded-2xl text-xl font-bold font-mono transition-all duration-100 active:scale-95 cursor-pointer shadow-sm bg-gradient-to-r from-[#ff9800] via-[#f57c00] to-[#e65100] hover:brightness-110 text-white border border-[#ffd54f]">=</button>
+      </div>
+    </div>
+
+    <div id="calcHistoryCard" hidden class="bg-white rounded-2xl p-4 border border-[#ffe0b2] shadow-xs text-xs">
+      <div class="flex items-center justify-between pb-2 border-b border-[#ffe8b8] mb-2 font-bold text-[#5d4037]">
+        <span>Журнал последних вычислений</span>
+        <button type="button" id="clearCalcHistory" class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer" title="Очистить журнал">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+      </div>
+      <div id="calcHistoryList" class="space-y-1 font-mono text-[#3e2723]"></div>
+    </div>
+  </div>
+</main>
+<nav th:replace="~{layout :: tabs('calc')}"></nav>
+<script th:src="@{/js/calc.js}"></script>
+</body>
+</html>
