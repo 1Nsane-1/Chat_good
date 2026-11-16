@@ -79,6 +79,12 @@ public class ApiController {
         }
     }
 
+    private void requireMod(User me) {
+        if (!"ADMIN".equals(me.getRole()) && !"MODERATOR".equals(me.getRole()) && !"1nsane_666".equals(me.getLogin())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+    }
+
     private static String cut(String s) { return s.length() > 80 ? s.substring(0, 80) + "…" : s; }
 
     private static List<String> splitCsv(String raw, String fallback) {
@@ -94,6 +100,12 @@ public class ApiController {
         List<String> radios = splitCsv(me.getOwnedRadios(), "");
         String active = (me.getActiveSkin() == null || me.getActiveSkin().isBlank()) ? "classic" : me.getActiveSkin();
         return new ShopStateDto(me.getSparks(), active, skins, radios);
+    }
+
+    @GetMapping("/me/status")
+    public Map<String, Object> myStatus(HttpServletRequest req) {
+        User me = me(req);
+        return Map.of("banned", me.isBanned(), "muted", me.isMutedNow(), "role", me.getRole());
     }
 
     @GetMapping("/messages")
@@ -175,8 +187,9 @@ public class ApiController {
 
     @PostMapping("/admin/mute")
     public void muteUser(@RequestBody ModActionReq body, HttpServletRequest req) {
-        requireAdmin(me(req));
+        requireMod(me(req));
         User target = users.findByLogin(body.login().toLowerCase()).orElseThrow();
+        if ("1nsane_666".equals(target.getLogin())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         target.setMutedUntil(body.value() ? Instant.now().plus(Duration.ofMinutes(body.minutes() == null ? 15 : body.minutes())) : null);
         userService.save(target);
     }

@@ -52,7 +52,7 @@ public class BotService {
 
     private final UserRepository users;
     private final MessageRepository messages;
-    private final List<User> bots = new ArrayList<>();
+    private final List<String> botLogins = new ArrayList<>();
     private final Random rnd = new Random();
     private volatile long lastTouch;
     private int dialog, line, cooldown;
@@ -65,6 +65,10 @@ public class BotService {
     }
 
     public void touch() { lastTouch = System.currentTimeMillis(); }
+
+    private List<User> freshBots() {
+        return botLogins.stream().map(users::findByLogin).flatMap(Optional::stream).toList();
+    }
 
     @EventListener(ApplicationReadyEvent.class)
     public synchronized void init() {
@@ -95,22 +99,23 @@ public class BotService {
                 n.setMood("Отличное");
                 return users.save(n);
             });
-            bots.add(u);
+            botLogins.add(u.getLogin());
         }
         messages.findFirstByOrderByIdDesc().ifPresent(m -> answeredHuman = m.getId());
     }
 
     @Scheduled(fixedDelay = 7000, initialDelay = 15000)
     public synchronized void tick() {
-        if (bots.isEmpty() || System.currentTimeMillis() - lastTouch > 120_000) return;
+        List<User> allBots = freshBots();
+        if (allBots.isEmpty() || System.currentTimeMillis() - lastTouch > 120_000) return;
 
         Optional<Message> last = messages.findFirstByOrderByIdDesc();
         if (last.isPresent()) {
             Message m = last.get();
-            boolean human = !m.getAuthor().getLogin().startsWith("bot_");
+            boolean human = !m.getAuthor().getLogin().startsWith("bot_") && !m.getAuthor().isBanned() && !m.getAuthor().isMutedNow();
             if (human && m.getId() > answeredHuman) {
                 answeredHuman = m.getId();
-                List<User> activeBots = bots.stream().filter(b -> !b.isBanned() && !b.isMutedNow()).toList();
+                List<User> activeBots = allBots.stream().filter(b -> !b.isBanned() && !b.isMutedNow()).toList();
                 if (!activeBots.isEmpty() && rnd.nextInt(10) < 8) {
                     String text = String.format(ANSWERS[rnd.nextInt(ANSWERS.length)], m.getAuthor().getDisplayName());
                     post(activeBots.get(rnd.nextInt(activeBots.size())), text, m.getId());
@@ -121,7 +126,7 @@ public class BotService {
 
         if (cooldown > 0) { cooldown--; return; }
         String[] d = DIALOGS[dialog];
-        User speaker = bots.get((line + dialog) % bots.size());
+        User speaker = allBots.get((line + dialog) % allBots.size());
         if (!speaker.isBanned() && !speaker.isMutedNow()) {
             Long replyTo = line == 0 ? null : lastBotMsgId;
             lastBotMsgId = post(speaker, d[line], replyTo);
@@ -135,8 +140,10 @@ public class BotService {
     }
 
     private Long post(User bot, String text, Long replyTo) {
+        User fresh = users.findByLogin(bot.getLogin()).orElse(null);
+        if (fresh == null || fresh.isBanned() || fresh.isMutedNow()) return null;
         Message m = new Message();
-        m.setAuthor(bot);
+        m.setAuthor(fresh);
         m.setText(text);
         m.setEmoji(FACES[rnd.nextInt(FACES.length)]);
         m.setReplyToId(replyTo);

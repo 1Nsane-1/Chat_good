@@ -91,13 +91,13 @@
     </div>
 
     <!-- Ban / Mute / Input Form -->
-    <div th:if="${me.banned}" class="p-3 bg-red-100 border-t border-red-300 text-center text-xs text-red-800 font-bold">
+    <div id="banBanner" th:hidden="${!me.banned}" class="p-3 bg-red-100 border-t border-red-300 text-center text-xs text-red-800 font-bold">
       🚫 Ваш аккаунт заблокирован администратором. Отправка сообщений недоступна.
     </div>
-    <div th:if="${!me.banned and me.mutedNow}" class="p-3 bg-amber-100 border-t border-amber-300 text-center text-xs text-amber-900 font-bold">
+    <div id="muteBanner" th:hidden="${me.banned or !me.mutedNow}" class="p-3 bg-amber-100 border-t border-amber-300 text-center text-xs text-amber-900 font-bold">
       🔇 На вас наложен временный мут. Отправка сообщений временно ограничена.
     </div>
-    <form id="form" th:if="${!me.banned and !me.mutedNow}" class="p-2 md:p-3 border-t flex gap-2 transition-colors bg-white border-[#ffe0b2]">
+    <form id="form" th:hidden="${me.banned or me.mutedNow}" class="p-2 md:p-3 border-t flex gap-2 transition-colors bg-white border-[#ffe0b2]">
       <input id="text" maxlength="500" placeholder="Напиши что-нибудь доброе в чат..." autocomplete="off"
              class="flex-1 px-4 py-2.5 text-sm border focus:border-[#ff9800] focus:ring-2 focus:ring-[#ff9800]/30 rounded-xl outline-none transition-all bg-[#fffef9] border-[#ffcc80] text-[#2d2a26] placeholder:text-gray-400">
       <button id="sendBtn" type="submit" class="px-4 py-2.5 font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-gradient-to-r from-[#ff9800] to-[#f57c00] hover:from-[#f57c00] hover:to-[#e65100] text-white" aria-label="Отправить сообщение">

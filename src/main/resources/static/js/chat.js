@@ -255,13 +255,29 @@
   function clearReply() { replyTo = null; if (bar) bar.hidden = true; }
   document.getElementById('replycancel')?.addEventListener('click', clearReply);
 
+  const banBanner = document.getElementById('banBanner');
+  const muteBanner = document.getElementById('muteBanner');
+
+  function applyMyStatus(st) {
+    if (!st) return;
+    const isBanned = Boolean(st.banned);
+    const isMuted = !isBanned && Boolean(st.muted);
+    if (banBanner) banBanner.hidden = !isBanned;
+    if (muteBanner) muteBanner.hidden = !isMuted;
+    if (footBar) footBar.hidden = isBanned || isMuted;
+  }
+
   async function modPost(url, payload, msgText) {
     const r = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    if (r.ok && msgText) showNotice(msgText);
+    if (!r.ok) {
+      showNotice('Ошибка: недостаточно прав или пользователь защищён.');
+      return;
+    }
+    if (msgText) showNotice(msgText);
     await reloadMessages();
     if (adminPanel && !adminPanel.hidden) loadAdminUsers();
   }
@@ -435,9 +451,13 @@
 
   async function poll() {
     try {
-      const r = await fetch('/api/messages?after=' + last);
-      if (r.status === 401) { location = '/login'; return; }
-      (await r.json()).forEach(add);
+      const [msgRes, statusRes] = await Promise.all([
+        fetch('/api/messages?after=' + last),
+        fetch('/api/me/status')
+      ]);
+      if (msgRes.status === 401 || statusRes.status === 401) { location = '/login'; return; }
+      if (statusRes.ok) applyMyStatus(await statusRes.json());
+      if (msgRes.ok) (await msgRes.json()).forEach(add);
     } catch (e) {}
   }
 
@@ -505,13 +525,13 @@
         bBtn.type = 'button';
         bBtn.className = 'flex-1 py-1 text-white rounded text-[10px] font-bold cursor-pointer ' + (u.banned ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700');
         bBtn.textContent = u.banned ? 'Разбанить' : 'Бан';
-        bBtn.addEventListener('click', () => modPost('/api/admin/ban', { login: u.login, value: !u.banned }));
+        bBtn.addEventListener('click', () => modPost('/api/admin/ban', { login: u.login, value: !u.banned }, (u.banned ? 'Разбанен ' : 'Забанен ') + (u.displayName || u.login)));
 
         const mBtn = document.createElement('button');
         mBtn.type = 'button';
         mBtn.className = 'flex-1 py-1 text-white rounded text-[10px] font-bold cursor-pointer ' + (u.muted ? 'bg-blue-600 hover:bg-blue-700' : 'bg-amber-600 hover:bg-amber-700');
         mBtn.textContent = u.muted ? 'Размут' : 'Мут (10м)';
-        mBtn.addEventListener('click', () => modPost('/api/admin/mute', { login: u.login, value: !u.muted, minutes: 10 }));
+        mBtn.addEventListener('click', () => modPost('/api/admin/mute', { login: u.login, value: !u.muted, minutes: 10 }, (u.muted ? 'Снят мут с ' : 'Выдан мут ') + (u.displayName || u.login)));
 
         act.append(bBtn, mBtn);
         card.appendChild(act);
@@ -548,6 +568,7 @@
         await loadShopSkin();
       } else if (r.status === 403) {
         showNotice('Отправка сообщений ограничена администратором (бан или мут).');
+        await poll();
       }
     });
   }
