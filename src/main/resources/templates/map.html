@@ -21,7 +21,10 @@
       <p>Или передайте через переменную окружения: <code class="font-mono font-bold">YANDEX_MAPS_KEY</code>.</p>
     </div>
 
-    <div id="map"></div>
+    <div th:if="${!#strings.isEmpty(yandexKey)}" id="map"></div>
+    <div th:if="${#strings.isEmpty(yandexKey)}" class="rounded-2xl border border-dashed border-[#80cbc4] bg-[#f4fbfa] p-6 text-center text-xs text-[#00695c]">
+      Интерактивная Яндекс.Карта появится здесь сразу после указания <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-[#b2dfdb]">app.yandex.key</code> и перезапуска сервера.
+    </div>
     <p id="status" class="text-xs font-medium text-[#e65100] bg-[#fff8ea] px-3 py-1.5 rounded-lg border border-[#ffe2a8]">Определяю твоё местоположение…</p>
   </div>
 </main>

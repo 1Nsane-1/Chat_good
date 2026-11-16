@@ -138,7 +138,7 @@
 
   function applySkinClasses() {
     const s = skin();
-    if (shell) shell.className = 'flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-150px)] max-h-[820px] rounded-2xl border shadow-sm overflow-hidden mb-16 md:mb-4 relative transition-colors ' + s.container;
+    if (shell) shell.className = 'flex flex-col h-[calc(100vh-165px)] md:h-[calc(100vh-185px)] max-h-[820px] rounded-2xl border shadow-sm overflow-hidden mb-16 md:mb-0 relative transition-colors ' + s.container;
     if (headerBar) headerBar.className = 'px-4 py-2.5 border-b flex flex-wrap items-center justify-between gap-2 transition-colors ' + s.header;
     if (titleEl) titleEl.className = 'text-sm font-bold ' + s.headerTitle;
     if (subEl) subEl.className = 'text-[11px] ' + s.headerSub;

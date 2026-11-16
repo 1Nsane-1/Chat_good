@@ -4,9 +4,9 @@
 <body class="min-h-screen bg-[#fff8ec] text-[#2d2a26] flex flex-col font-sans selection:bg-[#ffd84d] selection:text-black">
 <header th:replace="~{layout :: top(true)}"></header>
 <div th:replace="~{layout :: topnav('chat')}"></div>
-<main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-6 pb-16">
+<main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-4 md:pt-5 pb-16 md:pb-4">
   <div id="chatShell"
-       class="flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-150px)] max-h-[820px] rounded-2xl border shadow-sm overflow-hidden mb-16 md:mb-4 relative transition-colors bg-white border-[#ffe0b2]"
+       class="flex flex-col h-[calc(100vh-165px)] md:h-[calc(100vh-185px)] max-h-[820px] rounded-2xl border shadow-sm overflow-hidden mb-16 md:mb-0 relative transition-colors bg-white border-[#ffe0b2]"
        th:attr="data-skin=${!#strings.isEmpty(me.activeSkin) ? me.activeSkin : 'classic'},data-login=${me.login},data-role=${me.role},data-sparks=${me.sparks}">
 
     <!-- Chat Header Bar -->
